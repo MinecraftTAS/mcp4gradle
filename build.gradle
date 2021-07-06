@@ -5,7 +5,7 @@ plugins {
 
 // Group and Version for Gradle Plugin
 group = 'de.pfannekuchen'
-version = '1.0.0'
+version = '1.0.1'
 
 java {
     withJavadocJar()

@@ -25,7 +25,6 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencyResolutionListener;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ResolvableDependencies;
-import org.gradle.api.plugins.JavaApplication;
 
 import jadretro.Main;
 import mcinjector.MCInjectorImpl;
@@ -35,7 +34,7 @@ import retrogradle.obf.RetroGuardImpl;
 
 /**
  * Gradle plugin. 
- * @author Pancake
+ * @author Pancake	
  */
 public class MCPGradle implements Plugin<Project> {
 	
@@ -44,26 +43,25 @@ public class MCPGradle implements Plugin<Project> {
 	 */
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().apply("application");
+		project.getPlugins().apply("java-library");
 		project.getAllTasks(true).forEach((p, tasks) -> {
 			tasks.forEach((task) -> {
 				task.setGroup(null);
 			});
 		});
-		project.getTasksByName("javadoc", true).iterator().next().setGroup("mcpgradle");		project.getTasksByName("run", true).iterator().next().setGroup("mcpgradle");
-		project.getTasksByName("build", true).iterator().next().setGroup("mcpgradle");
-		/* Register Tasks, Repositories and Dependencies */ 
+		project.getTasksByName("javadoc", true).iterator().next().setGroup("mcpgradle");		/* Register Tasks, Repositories and Dependencies */ 
 		final DependencySet deps = project.getConfigurations().getByName("implementation").getDependencies();
 		project.getTasks().register("commit", TaskCommit.class).get().setGroup("mcpgradle");
 		project.getTasks().register("decommit", TaskDecommit.class).get().setGroup("mcpgradle");
+		TaskExport export = project.getTasks().register("export", TaskExport.class).get();
+		export.setGroup("mcpgradle");
+		export.dependsOn("jar");
 		project.getRepositories().mavenCentral();
 		project.getRepositories().maven((in) -> { try { in.setUrl(new URI("https://mgnet.work/repo")); } catch (Exception e) {} } );
 		project.getRepositories().maven((in) -> { try { in.setUrl(new URI("https://libraries.minecraft.net/")); } catch (Exception e) {} } );
 		project.afterEvaluate((p) -> {
-			p.getExtensions().getByType(JavaApplication.class).getMainClass().set("Start");
-			p.getExtensions().getByType(JavaApplication.class).setApplicationDefaultJvmArgs(Arrays.asList("-Xmx2G", "-Xms256M", "-Djava.library.path=" + new File(project.getProjectDir(), "build/natives/").getAbsolutePath()));
-			// download main class + natives if it doesn't exist
-			if (!(new File(project.getProjectDir(), "src/main/java/Start.java").exists())) {
+			// download natives if it doesn't exist
+			if (!(new File(project.getBuildDir(), "natives/").exists())) {
 				try {
 					new File(project.getBuildDir(), "natives").mkdirs();
 					new File(project.getProjectDir(), "src/main/java").mkdirs();
@@ -75,8 +73,6 @@ public class MCPGradle implements Plugin<Project> {
 					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/lwjgl64.dll").openStream(), new File(project.getBuildDir(), "natives/lwjgl64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
 					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/OpenAL32.dll").openStream(), new File(project.getBuildDir(), "natives/OpenAL32.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
 					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/OpenAL64.dll").openStream(), new File(project.getBuildDir(), "natives/OpenAL64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/Start1.0.java").openStream(), new File(project.getProjectDir(), "src/main/java/Start.java").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/me1.0.java").openStream(), new File(project.getProjectDir(), "src/main/java/me.java").toPath(), StandardCopyOption.REPLACE_EXISTING);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
