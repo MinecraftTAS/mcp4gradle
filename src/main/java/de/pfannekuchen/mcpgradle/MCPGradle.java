@@ -25,7 +25,6 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencyResolutionListener;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ResolvableDependencies;
-import org.gradle.api.plugins.JavaApplication;
 
 import jadretro.Main;
 import mcinjector.MCInjectorImpl;
@@ -35,7 +34,7 @@ import retrogradle.obf.RetroGuardImpl;
 
 /**
  * Gradle plugin. 
- * @author Pancake
+ * @author Pancake	
  */
 public class MCPGradle implements Plugin<Project> {
 	
@@ -44,39 +43,36 @@ public class MCPGradle implements Plugin<Project> {
 	 */
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().apply("application");
+		project.getPlugins().apply("java-library");
 		project.getAllTasks(true).forEach((p, tasks) -> {
 			tasks.forEach((task) -> {
 				task.setGroup(null);
 			});
 		});
-		project.getTasksByName("javadoc", true).iterator().next().setGroup("mcpgradle");		project.getTasksByName("run", true).iterator().next().setGroup("mcpgradle");
-		project.getTasksByName("build", true).iterator().next().setGroup("mcpgradle");
-		/* Register Tasks, Repositories and Dependencies */ 
+		project.getTasksByName("javadoc", true).iterator().next().setGroup("mcpgradle");		/* Register Tasks, Repositories and Dependencies */ 
 		final DependencySet deps = project.getConfigurations().getByName("implementation").getDependencies();
 		project.getTasks().register("commit", TaskCommit.class).get().setGroup("mcpgradle");
 		project.getTasks().register("decommit", TaskDecommit.class).get().setGroup("mcpgradle");
+		TaskExport export = project.getTasks().register("export", TaskExport.class).get();
+		export.setGroup("mcpgradle");
+		export.dependsOn("jar");
 		project.getRepositories().mavenCentral();
-		project.getRepositories().maven((in) -> { try { in.setUrl(new URI("https://mgnet.work/repo")); } catch (Exception e) {} } );
+		project.getRepositories().maven((in) -> { try { in.setUrl(new URI("https://maven.mgnet.work")); } catch (Exception e) {} } );
 		project.getRepositories().maven((in) -> { try { in.setUrl(new URI("https://libraries.minecraft.net/")); } catch (Exception e) {} } );
 		project.afterEvaluate((p) -> {
-			p.getExtensions().getByType(JavaApplication.class).getMainClass().set("Start");
-			p.getExtensions().getByType(JavaApplication.class).setApplicationDefaultJvmArgs(Arrays.asList("-Xmx2G", "-Xms256M", "-Djava.library.path=" + new File(project.getProjectDir(), "build/natives/").getAbsolutePath()));
-			// download main class + natives if it doesn't exist
-			if (!(new File(project.getProjectDir(), "src/main/java/Start.java").exists())) {
+			// download natives if it doesn't exist
+			if (!(new File(project.getBuildDir(), "natives/").exists())) {
 				try {
 					new File(project.getBuildDir(), "natives").mkdirs();
 					new File(project.getProjectDir(), "src/main/java").mkdirs();
-					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/jinput-dx8.dll").openStream(), new File(project.getBuildDir(), "natives/jinput-dx8.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/jinput-dx8_64.dll").openStream(), new File(project.getBuildDir(), "natives/jinput-dx8_64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/jinput-raw.dll").openStream(), new File(project.getBuildDir(), "natives/jinput-raw.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/jinput-raw_64.dll").openStream(), new File(project.getBuildDir(), "natives/jinput-raw_64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/lwjgl.dll").openStream(), new File(project.getBuildDir(), "natives/lwjgl.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/lwjgl64.dll").openStream(), new File(project.getBuildDir(), "natives/lwjgl64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/OpenAL32.dll").openStream(), new File(project.getBuildDir(), "natives/OpenAL32.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/1.0natives/OpenAL64.dll").openStream(), new File(project.getBuildDir(), "natives/OpenAL64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/Start1.0.java").openStream(), new File(project.getProjectDir(), "src/main/java/Start.java").toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Files.copy(new URL("https://mgnet.work/cfg/me1.0.java").openStream(), new File(project.getProjectDir(), "src/main/java/me.java").toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(new URL("https://data.mgnet.work/mcp4gradle/natives/jinput-dx8.dll").openStream(), new File(project.getBuildDir(), "natives/jinput-dx8.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(new URL("https://data.mgnet.work/mcp4gradle/natives/jinput-dx8_64.dll").openStream(), new File(project.getBuildDir(), "natives/jinput-dx8_64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(new URL("https://data.mgnet.work/mcp4gradle/natives/jinput-raw.dll").openStream(), new File(project.getBuildDir(), "natives/jinput-raw.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(new URL("https://data.mgnet.work/mcp4gradle/natives/jinput-raw_64.dll").openStream(), new File(project.getBuildDir(), "natives/jinput-raw_64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(new URL("https://data.mgnet.work/mcp4gradle/natives/lwjgl.dll").openStream(), new File(project.getBuildDir(), "natives/lwjgl.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(new URL("https://data.mgnet.work/mcp4gradle/natives/lwjgl64.dll").openStream(), new File(project.getBuildDir(), "natives/lwjgl64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(new URL("https://data.mgnet.work/mcp4gradle/natives/OpenAL32.dll").openStream(), new File(project.getBuildDir(), "natives/OpenAL32.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(new URL("https://data.mgnet.work/mcp4gradle/natives/OpenAL64.dll").openStream(), new File(project.getBuildDir(), "natives/OpenAL64.dll").toPath(), StandardCopyOption.REPLACE_EXISTING);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -103,13 +99,13 @@ public class MCPGradle implements Plugin<Project> {
 				// create new config file with above paths
 				Files.write(client_rg_cfg.toPath(), Arrays.asList(
 						"startindex = 0",
-						"input = " + Utils.obtainTempFile(new URL("https://mgnet.work/repo/com/mojang/minecraft/1.0/minecraft-1.0.jar")).getAbsolutePath(),
+						"input = " + Utils.obtainTempFile(new URL("https://maven.mgnet.work/com/mojang/minecraft/1.0/minecraft-1.0.jar")).getAbsolutePath(),
 						"output = " + minecraft_rg_jar.getAbsolutePath(),
 						"reobinput = " + Utils.tempFile().getAbsolutePath(),
 						"reoboutput = " + Utils.tempFile().getAbsolutePath(),
-						"script = " + Utils.obtainTempFile(new URL("https://mgnet.work/cfg/retroguard1.0.cfg")).getAbsolutePath(),
+						"script = " + Utils.obtainTempFile(new URL("https://data.mgnet.work/mcp4gradle/mappings/retroguard.cfg")).getAbsolutePath(),
 						"log = " + Utils.tempFile().getAbsolutePath(),
-						"deob = " + Utils.obtainTempFile(new URL("https://mgnet.work/cfg/client_rg1.0.srg")).getAbsolutePath(),
+						"deob = " + Utils.obtainTempFile(new URL("https://data.mgnet.work/mcp4gradle/mappings/client_rg.srg")).getAbsolutePath(),
 						"protectedpackage = paulscode",	
 						"protectedpackage = com/jcraft",
 						"protectedpackage = isom",
@@ -124,7 +120,7 @@ public class MCPGradle implements Plugin<Project> {
 				/* MCInjector */
 				File minecraft_exc_jar = Utils.tempFile();
 				// run mcinjector the actual right way
-				MCInjectorImpl.process(minecraft_rg_jar.getAbsolutePath(), minecraft_exc_jar.getAbsolutePath(), Utils.obtainTempFile(new URL("https://mgnet.work/cfg/client1.0.exc")).getAbsolutePath(), Utils.tempFile().getAbsolutePath(), null, 0);
+				MCInjectorImpl.process(minecraft_rg_jar.getAbsolutePath(), minecraft_exc_jar.getAbsolutePath(), Utils.obtainTempFile(new URL("https://data.mgnet.work/mcp4gradle/mappings/client.exc")).getAbsolutePath(), Utils.tempFile().getAbsolutePath(), null, 0);
 				System.out.println("Applying Jad Retro to sources...");
 				/* Jadretro */
 		        new File(project.getBuildDir(), "src/minecraft").mkdirs(); // dumb.. create the build folder first
@@ -136,18 +132,18 @@ public class MCPGradle implements Plugin<Project> {
 		        Main.main(new String[] { new File(project.getBuildDir(), "bin/minecraft/net/minecraft/src").getAbsolutePath()});
 		        System.out.println("Decompiling using Jad..");
 		        /* Jad */
-		        File jad_exe = Utils.obtainTempFile(new URL("https://mgnet.work/cfg/jad1.0.exe"));
+		        File jad_exe = Utils.obtainTempFile(new URL("https://data.mgnet.work/mcp4gradle/tools/jad.exe"));
 		        // jad is not a java program (???) so we run it via cli
 		        Utils.run(Arrays.asList(jad_exe.getAbsolutePath(), "-b", "-d", "src/minecraft", "-dead", "-o", "-r", "-s", ".java", "-stat", "-v", "-ff", "bin/minecraft\\net\\minecraft\\client\\*.class"), project.getBuildDir(), false);
 		        Utils.run(Arrays.asList(jad_exe.getAbsolutePath(), "-b", "-d", "src/minecraft", "-dead", "-o", "-r", "-s", ".java", "-stat", "-v", "-ff", "bin/minecraft\\net\\minecraft\\src\\*.class"), project.getBuildDir(), false);
 		        System.out.println("Fixing up Sources..");
 		        /* Applydiff - few diffs so mcp works. */
-		        Utils.run(Arrays.asList(Utils.obtainTempFile(new URL("https://mgnet.work/cfg/applydiff1.0.exe")).getAbsolutePath(), "--binary", "-p1", "-u", "-i", Utils.obtainTempFile(new URL("https://mgnet.work/cfg/temp1.0.patch")).getAbsolutePath(), "-d", "src/minecraft"), project.getBuildDir(), false);
+		        Utils.run(Arrays.asList(Utils.obtainTempFile(new URL("https://data.mgnet.work/mcp4gradle/tools/applydiff.exe")).getAbsolutePath(), "--binary", "-p1", "-u", "-i", Utils.obtainTempFile(new URL("https://data.mgnet.work/mcp4gradle/mappings/temp.patch")).getAbsolutePath(), "-d", "src/minecraft"), project.getBuildDir(), false);
 		        System.out.println("Renaming Sources..");
 		        /* Rename Sources */
 		        // read csv files
-		        CSVParser functionParser = CSVFormat.DEFAULT.parse(new FileReader(Utils.obtainTempFile(new URL("https://mgnet.work/cfg/methods1.0.csv"))));
-		        CSVParser methodParser = CSVFormat.DEFAULT.parse(new FileReader(Utils.obtainTempFile(new URL("https://mgnet.work/cfg/fields1.0.csv"))));
+		        CSVParser functionParser = CSVFormat.DEFAULT.parse(new FileReader(Utils.obtainTempFile(new URL("https://data.mgnet.work/mcp4gradle/mappings/methods.csv"))));
+		        CSVParser methodParser = CSVFormat.DEFAULT.parse(new FileReader(Utils.obtainTempFile(new URL("https://data.mgnet.work/mcp4gradle/mappings/fields.csv"))));
 		        HashMap<String, String> functionRefmap = new HashMap<>();
 		        for (CSVRecord csvRecord : functionParser) {
 		        	if (csvRecord.get(8).equals("0")) functionRefmap.put(csvRecord.get(0), csvRecord.get(1));
