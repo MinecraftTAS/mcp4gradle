@@ -12,7 +12,7 @@ import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 
 /**
- * Gradle Task for creating the patch files
+ * Gradle Task for creating patch files
  * @author Pancake
  */
 public class TaskCreateDiff extends DefaultTask {
