@@ -84,7 +84,7 @@ public class MCP4Gradle implements Plugin<Project> {
 			
 			// fully decompile the game
 			try {
-				Decompiler.decompile(project.getProjectDir());
+				MCUtils.decompile(project.getProjectDir());
 			} catch (Exception e) {
 				System.err.println("Unable to decompile the game");
 				e.printStackTrace();

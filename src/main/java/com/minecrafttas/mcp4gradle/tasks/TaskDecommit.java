@@ -23,7 +23,7 @@ public class TaskDecommit extends DefaultTask {
 	        new File(getProject().getProjectDir(), "src/main/java").mkdirs();
 			new File(getProject().getProjectDir(), "src/main/java/net/minecraft").delete();
 			System.err.println("Copying sources...");
-			Utils.copyFolder(new File(getProject().getProjectDir(), "build/src/minecraft").toPath(), new File(getProject().getProjectDir(), "src/main/java").toPath(), StandardCopyOption.REPLACE_EXISTING);
+			Utils.copyFolder(new File(getProject().getProjectDir(), "build/src/minecraft").toPath(), new File(getProject().getProjectDir(), "src/main/java").toPath());
 	        /* Patch source */
 			if (!new File("C:\\Windows\\System32\\wsl.exe").exists()) {
 	        	getProject().getLogger().error("Please install WSL, the packages diffutils and git");
