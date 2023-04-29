@@ -1,4 +1,4 @@
-package de.pfannekuchen.mcpgradle;
+package com.minecrafttas.mcp4gradle;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

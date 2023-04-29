@@ -1,4 +1,4 @@
-package de.pfannekuchen.mcpgradle;
+package com.minecrafttas.mcp4gradle.tasks;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -6,6 +6,8 @@ import java.net.URL;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
+
+import com.minecrafttas.mcp4gradle.Utils;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;

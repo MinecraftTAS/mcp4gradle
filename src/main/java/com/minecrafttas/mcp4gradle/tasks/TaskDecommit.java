@@ -1,4 +1,4 @@
-package de.pfannekuchen.mcpgradle;
+package com.minecrafttas.mcp4gradle.tasks;
 
 import java.io.File;
 import java.nio.file.StandardCopyOption;
@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
+
+import com.minecrafttas.mcp4gradle.Utils;
 
 /**
  * Task used to recreate sources after another person has committed
