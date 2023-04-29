@@ -11,8 +11,8 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencyResolutionListener;
 import org.gradle.api.artifacts.ResolvableDependencies;
 
-import com.minecrafttas.mcp4gradle.tasks.TaskCommit;
-import com.minecrafttas.mcp4gradle.tasks.TaskDecommit;
+import com.minecrafttas.mcp4gradle.tasks.TaskCreateDiff;
+import com.minecrafttas.mcp4gradle.tasks.TaskApplyDiff;
 import com.minecrafttas.mcp4gradle.tasks.TaskExport;
 
 /**
@@ -30,9 +30,9 @@ public class MCP4Gradle implements Plugin<Project> {
 		project.getPlugins().apply("java-library");
 		
 		// add tasks
-		var commitTask = project.getTasks().register("commit", TaskCommit.class).get();
+		var commitTask = project.getTasks().register("createDiff", TaskCreateDiff.class).get();
 		commitTask.setGroup("mcpgradle");
-		var decommitTask = project.getTasks().register("decommit", TaskDecommit.class).get();
+		var decommitTask = project.getTasks().register("applyDiff", TaskApplyDiff.class).get();
 		decommitTask.setGroup("mcpgradle");
 		var exportTask = project.getTasks().register("export", TaskExport.class).get();
 		exportTask.setGroup("mcpgradle");
@@ -40,8 +40,8 @@ public class MCP4Gradle implements Plugin<Project> {
 		
 		// add repositories
 		project.getRepositories().mavenCentral();
-		project.getRepositories().maven(in -> URI.create("https://maven.mgnet.work/main"));
-		project.getRepositories().maven(in -> URI.create("https://libraries.minecraft.net/"));
+		project.getRepositories().maven(in -> in.setUrl(URI.create("https://maven.mgnet.work/main")));
+		project.getRepositories().maven(in -> in.setUrl(URI.create("https://libraries.minecraft.net/")));
 
 		// add dependencies
 		var deps = project.getConfigurations().getByName("implementation").getDependencies();
@@ -84,7 +84,7 @@ public class MCP4Gradle implements Plugin<Project> {
 			
 			// fully decompile the game
 			try {
-				MCUtils.decompile(project.getProjectDir());
+				Utils.decompile(project.getBuildDir());
 			} catch (Exception e) {
 				System.err.println("Unable to decompile the game");
 				e.printStackTrace();
