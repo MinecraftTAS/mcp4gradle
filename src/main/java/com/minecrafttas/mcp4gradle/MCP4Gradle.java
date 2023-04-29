@@ -1,4 +1,4 @@
-package de.pfannekuchen.mcpgradle;
+package com.minecrafttas.mcp4gradle;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +26,10 @@ import org.gradle.api.artifacts.DependencyResolutionListener;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ResolvableDependencies;
 
+import com.minecrafttas.mcp4gradle.tasks.TaskCommit;
+import com.minecrafttas.mcp4gradle.tasks.TaskDecommit;
+import com.minecrafttas.mcp4gradle.tasks.TaskExport;
+
 import jadretro.Main;
 import mcinjector.MCInjectorImpl;
 import net.lingala.zip4j.ZipFile;
@@ -36,7 +40,7 @@ import retrogradle.obf.RetroGuardImpl;
  * Gradle plugin. 
  * @author Pancake	
  */
-public class MCPGradle implements Plugin<Project> {
+public class MCP4Gradle implements Plugin<Project> {
 	
 	/**
 	 * Called when the plugin is being loaded

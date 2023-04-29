@@ -1,4 +1,4 @@
-package de.pfannekuchen.mcpgradle;
+package com.minecrafttas.mcp4gradle.tasks;
 
 import java.io.File;
 import java.util.Arrays;
@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 
+import com.minecrafttas.mcp4gradle.Utils;
 /**
  * Gradle Task that automatically creates patch files, and commits with a 
  * user defined commit message
