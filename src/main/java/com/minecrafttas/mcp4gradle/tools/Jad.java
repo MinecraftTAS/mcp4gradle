@@ -28,7 +28,7 @@ public class Jad {
 	 * @throws Exception Filesystem Exception
 	 */
 	public void init() throws Exception {
-		var jad = Utils.obtainTempFile(JAD_EXE);
+		var jad = Utils.tempFile(JAD_EXE);
 		
 		this.p1 = new ProcessBuilder(jad.getAbsolutePath(), "-b", "-d", "src/minecraft", "-dead", "-o", "-r", "-s", ".java", "-stat", "-v", "-ff", "bin/minecraft/net/minecraft/client/*.class");
 		this.p1.directory(this.dir);

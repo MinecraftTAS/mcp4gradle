@@ -2,6 +2,7 @@ package com.minecrafttas.mcp4gradle.tools;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import com.minecrafttas.mcp4gradle.Utils;
 
@@ -48,8 +49,8 @@ public class RetroGuard {
 	 * @throws Exception Filesystem Exception
 	 */
 	public void init(File srg) throws Exception {
-		var file = Utils.createTempFile();
-		Files.write(file.toPath(), CONFIG.replace("%DEOB%", srg.getAbsolutePath()).getBytes());
+		var file = Utils.tempFile();
+		Files.write(file.toPath(), CONFIG.replace("%DEOB%", srg.getAbsolutePath()).getBytes(), StandardOpenOption.CREATE);
 		NameProvider.parseCommandLine(new String[] { "-searge", file.getAbsolutePath() });
 	}
 	

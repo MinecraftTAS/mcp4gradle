@@ -2,7 +2,6 @@ package com.minecrafttas.mcp4gradle.tasks;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.URL;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
@@ -26,7 +25,7 @@ public class TaskExport extends DefaultTask {
 			// download resources
 			File resDir = new File(getProject().getBuildDir(), "resources1.0");
 			resDir.mkdirs();
-			ZipFile res = new ZipFile(Utils.obtainTempFile(new URL("https://data.mgnet.work/mcp4gradle/assets.zip")));
+			ZipFile res = new ZipFile(Utils.tempFile("https://data.mgnet.work/mcp4gradle/assets.zip"));
 			res.extractAll(resDir.getAbsolutePath());
 			ZipFile orig = new ZipFile(jarFile);
 			resDir.listFiles(new FilenameFilter() {
