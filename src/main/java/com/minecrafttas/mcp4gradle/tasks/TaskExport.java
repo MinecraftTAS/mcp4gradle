@@ -1,7 +1,6 @@
 package com.minecrafttas.mcp4gradle.tasks;
 
 import java.io.File;
-import java.io.FilenameFilter;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
@@ -12,41 +11,45 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 
 /**
- * Gradle Task that automatically exports and obfuscates a File ready to be ran as minecraft.jar
+ * Gradle Task for exporting the project
  * @author Pancake
  */
 public class TaskExport extends DefaultTask {
 
+	private final String ASSETS_ZIP = "https://data.mgnet.work/mcp4gradle/assets.zip";
+	
+	/**
+	 * Update existing compiled jar with required sources to launch minecraft
+	 * @throws Exception
+	 */
 	@TaskAction
-	public void export() {
-		try {
-			System.err.println("Repacking...");
-			File jarFile = new File(getProject().getBuildDir(), "libs/").listFiles()[0];
-			// download resources
-			File resDir = new File(getProject().getBuildDir(), "resources1.0");
-			resDir.mkdirs();
-			ZipFile res = new ZipFile(Utils.tempFile("https://data.mgnet.work/mcp4gradle/assets.zip"));
-			res.extractAll(resDir.getAbsolutePath());
-			ZipFile orig = new ZipFile(jarFile);
-			resDir.listFiles(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					try {
-						File fileOrFolder = new File(dir, name);
-						ZipParameters parameters = new ZipParameters();
-						parameters.setOverrideExistingFilesInZip(false);
-						if (fileOrFolder.isDirectory()) orig.addFolder(fileOrFolder, parameters);
-						else orig.addFile(fileOrFolder, parameters);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					return false;
-				}
-			});
-			orig.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+	public void export() throws Exception {
+		var buildDir = this.getProject().getBuildDir();
+		
+		// download assets
+		var assets = new File(buildDir, "assets");
+		if (!assets.exists()) {
+			System.out.println("Downloading assets...");
+			assets.mkdirs();
+			var assetsZip = new ZipFile(Utils.tempFile(ASSETS_ZIP));
+			assetsZip.extractAll(assets.getAbsolutePath());
 		}
+		
+		// setup zip params
+		var params = new ZipParameters();
+		params.setOverrideExistingFilesInZip(false);
+		
+		// combine compiled jar and assets
+		System.out.println("Merging jar...");
+		var outputJar = new ZipFile(new File(buildDir, "libs/").listFiles()[0]);
+		for (File f : assets.listFiles())
+			if (f.isDirectory())
+				outputJar.addFolder(f, params);
+			else
+				outputJar.addFile(f, params);
+		
+		// close jar
+		outputJar.close();
 	}
 
 }
