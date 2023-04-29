@@ -1,10 +1,7 @@
 package com.minecrafttas.mcp4gradle;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.CopyOption;
 import java.nio.file.FileVisitResult;
@@ -14,58 +11,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Utils contains all kinds of Utils
  * @author Pancake
  */
 public class Utils {
-
-	/**
-	 * Executes and waits for a Process to finish
-	 * @param cmd Command to run split by ' '
-	 * @param dir Directory to run in
-	 */
-	public static void run(List<String> cmd, File dir, boolean redirectOut) {
-		try {
-			ProcessBuilder builder = new ProcessBuilder(cmd).redirectErrorStream(true);
-			builder.directory(dir);
-			Process p = builder.start();
-			p.getOutputStream().close();
-			
-			if (redirectOut) {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				copyLarge(p.getInputStream(), baos, new byte[4096]);
-				p.waitFor();
-				System.out.println(baos);
-			} else {
-				deleteLarge(p.getInputStream(), new byte[4096]);
-				p.waitFor();
-			}
-		} catch (Exception e) {
-			System.out.println("Task could not finish...");
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Clears an Input Stream
-	 * @param input In Stream
-	 * @param output Out Stream
-	 * @param buffer Multi-user Array
-	 * @return Returns count of objects copied
-	 * @throws IOException Throws whenever stream was corrupted
-	 */
-	private static long deleteLarge(InputStream input, byte[] buffer) throws IOException {
-		long count;
-		int n;
-		for(count = 0L; -1 != (n = input.read(buffer)); count += (long)n) {
-			// hello there...
-		}
-
-		return count;
-	}
 	
 	/**
 	 * Recursively copies a Folder to another one
@@ -92,30 +43,12 @@ public class Utils {
     }
 	
 	/**
-	 * Copies an Input Stream to another one
-	 * @param input In Stream
-	 * @param output Out Stream
-	 * @param buffer Multi-user Array
-	 * @return Returns count of objects copied
-	 * @throws IOException Throws whenever stream was corrupted
-	 */
-	private static long copyLarge(InputStream input, OutputStream output, byte[] buffer) throws IOException {
-		long count;
-		int n;
-		for(count = 0L; -1 != (n = input.read(buffer)); count += (long)n) {
-			output.write(buffer, 0, n);
-		}
-
-		return count;
-	}
-	
-	/**
 	 * Creates a new Temp File
 	 * @return Returns a created file
 	 * @throws Exception Throws an Exception whenever IO is busy 
 	 */
 	public static File createTempFile() throws Exception {
-		return File.createTempFile("temp", "java");
+		return File.createTempFile("mcp4gradle", "");
 	}
 	
 	/**
@@ -124,7 +57,7 @@ public class Utils {
 	 * @throws Exception Throws an Exception whenever IO is busy 
 	 */
 	public static File tempFile() throws Exception {
-		File temp = File.createTempFile("temp", "java");
+		File temp = File.createTempFile("mcp4gradle", "");
 		temp.delete();
 		return temp;
 	}
@@ -135,10 +68,9 @@ public class Utils {
 	 * @return Returns temp file4
 	 * @throws Exception Throws an Exception whenever IO is busy
 	 */
-	public static File obtainTempFile(URL url) throws Exception {
-		File temp = File.createTempFile("temp", "java");
-		temp.delete();
-		Files.copy(url.openStream(), temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	public static File obtainTempFile(String url) throws Exception {
+		File temp = File.createTempFile("mcp4gradle", "");
+		Files.copy(new URL(url).openStream(), temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		return temp;
 	}
 
