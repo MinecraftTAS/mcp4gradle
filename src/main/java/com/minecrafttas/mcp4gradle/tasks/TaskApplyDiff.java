@@ -15,7 +15,7 @@ import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
 
 /**
- * Task used to recreate sources after another person has committed
+ * Gradle Task for recreating sources
  * @author Pancake
  */
 public class TaskApplyDiff extends DefaultTask {

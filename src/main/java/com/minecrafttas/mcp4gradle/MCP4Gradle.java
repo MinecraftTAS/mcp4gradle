@@ -21,9 +21,6 @@ import com.minecrafttas.mcp4gradle.tasks.TaskExport;
  */
 public class MCP4Gradle implements Plugin<Project> {
 	
-	/**
-	 * Called when the plugin is being loaded
-	 */
 	@Override
 	public void apply(Project project) {
 		// add required plugins
