@@ -3,33 +3,53 @@ plugins {
 	id 'maven-publish'
 }
 
-// Group and Version for Gradle Plugin
-group = 'de.pfannekuchen'
-version = '1.0.2'
+group = 'com.minecrafttas'
+version = '2.0.0'
+archivesBaseName = 'mcp4gradle'
 
-java {
-    withJavadocJar()
-    withSourcesJar()
+repositories {
+	mavenCentral()
+	gradlePluginPortal()
+	maven { url "https://maven.mgnet.work/main" }
+}
+
+dependencies {
+	// Add zip4j for unzipping easily
+	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.5'
+	
+	// Add apache commons csv for reading mappings
+	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
+	
+	// Add diff utils for patch file generation
+	implementation group: 'io.github.java-diff-utils', name: 'java-diff-utils', version: '4.12'
+	
+	// Add required decompilation dependencies
+	implementation group: 'com.minecrafttas', name: 'mcinjector-og', version: '2.0.0'
+	implementation group: 'com.minecrafttas', name: 'retroguard-og', version: '3.0.0'
+	implementation group: 'com.minecrafttas', name: 'jadretro-og', version: '1.6.0'
+	
+	// Add shadow plugin for exporting
+	implementation group: 'com.github.johnrengelman', name: 'shadow', version: '8.1.1'
 }
 
 gradlePlugin {
     plugins {
-        mcpgradleog {
-            id = 'mcpgradleog'
-            implementationClass = 'de.pfannekuchen.mcpgradle.MCPGradle'
+        mcp4gradle {
+            id = project.archivesBaseName
+            implementationClass = project.group + '.' + project.archivesBaseName + '.' + 'MCP4Gradle'
         }
     }
 }
 
-repositories {
-	mavenCentral()
-	maven { url "https://maven.mgnet.work/" }
-}
-
-dependencies {
-	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.9.0' // For unzipping	
-	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8' // For Reading csv tables
-	implementation group: 'de.pfannekuchen.mcpgradle', name: 'mcinjector-og', version: '2.0' // For MCP
-	implementation group: 'de.pfannekuchen.mcpgradle', name: 'retroguard-og', version: '3.0.0' // For MCP
-	implementation group: 'de.pfannekuchen.mcpgradle', name: 'jadretro-og', version: '1.6' // For MCP
+publishing {
+	repositories {
+		maven {
+			name = "mgnetwork"
+			url = "https://maven.mgnet.work/main"
+			credentials(PasswordCredentials)
+			authentication {
+				basic(BasicAuthentication)
+			}
+		}
+	}
 }
