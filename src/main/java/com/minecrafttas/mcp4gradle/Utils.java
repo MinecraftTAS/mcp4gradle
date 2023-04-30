@@ -36,7 +36,7 @@ public class Utils {
 	 * @param build Build/Output directory
 	 * @throws Exception Exception during decompilation process
 	 */
-	public static void decompile(File build) throws Exception {
+	public static void decompile(File build, File assets) throws Exception {
 		System.out.println("Running RetroGuard...");
 		var rOut = tempFile();
 		var retroguard = new RetroGuard(tempFile(MINECRAFT_URL), rOut, tempFile(RETROGUARD_CFG));
@@ -75,7 +75,7 @@ public class Utils {
         
         System.out.println("Successfully decompiled minecraft");
 	}
-	
+
 	/**
 	 * Recursively copy a folder
 	 * @param source Source folder

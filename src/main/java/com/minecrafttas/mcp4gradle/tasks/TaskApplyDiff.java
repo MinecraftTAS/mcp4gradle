@@ -78,6 +78,8 @@ public class TaskApplyDiff extends DefaultTask {
 			return;
 		}
 
+		out.getParentFile().mkdirs();
+		
 		// skip if no patch
 		Patch<String> patch;
 		if ((patch = patches.get(original.getName())) == null) {
@@ -92,7 +94,6 @@ public class TaskApplyDiff extends DefaultTask {
 		var outText = DiffUtils.patch(Files.readAllLines(original.toPath()), patch);
 		
 		// write file
-		out.getParentFile().mkdirs();
 		Files.write(out.toPath(), outText, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 	}
 	
