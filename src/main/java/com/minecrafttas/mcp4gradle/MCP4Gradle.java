@@ -1,10 +1,7 @@
 package com.minecrafttas.mcp4gradle;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
-import java.nio.file.Files;
 
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
@@ -51,28 +48,6 @@ public class MCP4Gradle implements Plugin<Project> {
 		((ModuleDependency) project.getDependencies().add("implementation", "org.lwjgl.lwjgl:lwjgl_util:2.9.0")).setTransitive(false);
 		project.getDependencies().add("runtimeOnly", "org.lwjgl.lwjgl:lwjgl-platform:2.9.0");
 		project.getDependencies().add("runtimeOnly", "net.java.jinput:jinput-platform:2.0.5");
-		
-		// download natives
-		project.afterEvaluate((p) -> {
-			var natives = new File(project.getBuildDir(), "natives");
-			if (natives.exists())
-				return;
-			
-			try {
-				natives.mkdirs();
-				
-				var url = "https://data.mgnet.work/mcp4gradle/natives/";
-				Files.copy(new URL(url + "jinput-dx8_64.dll").openStream(), new File(natives, "jinput-dx8_64.dll").toPath());
-				Files.copy(new URL(url + "jinput-raw_64.dll").openStream(), new File(natives, "jinput-raw_64.dll").toPath());
-				Files.copy(new URL(url + "lwjgl64.dll").openStream(), new File(natives, "lwjgl64.dll").toPath());
-				Files.copy(new URL(url + "OpenAL64.dll").openStream(), new File(natives, "OpenAL64.dll").toPath());
-			} catch (IOException e) {
-				natives.delete();
-				
-				System.err.println("Unable to download natives");
-				e.printStackTrace();
-			}
-		});
 		
 		// create project if minecraft isn't decompiled yet
 		if (!new File(project.getBuildDir(), "src/minecraft/net/minecraft/client/Minecraft.java").exists()) {
