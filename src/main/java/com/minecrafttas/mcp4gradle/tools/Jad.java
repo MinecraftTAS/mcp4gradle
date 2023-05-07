@@ -28,17 +28,17 @@ public class Jad {
 	 * @throws Exception Filesystem Exception
 	 */
 	public void init() throws Exception {
-		var jad = Utils.tempFile(JAD_EXE);
+		File jad = Utils.tempFile(JAD_EXE);
 		
 		this.p1 = new ProcessBuilder(jad.getAbsolutePath(), "-b", "-d", "src/minecraft", "-dead", "-o", "-r", "-s", ".java", "-stat", "-v", "-ff", "bin/minecraft/net/minecraft/client/*.class");
 		this.p1.directory(this.dir);
-		this.p1.redirectOutput(Redirect.DISCARD);
-		this.p1.redirectError(Redirect.DISCARD);
+		this.p1.redirectOutput(Redirect.INHERIT);
+		this.p1.redirectError(Redirect.INHERIT);
 
 		this.p2 = new ProcessBuilder(jad.getAbsolutePath(), "-b", "-d", "src/minecraft", "-dead", "-o", "-r", "-s", ".java", "-stat", "-v", "-ff", "bin/minecraft/net/minecraft/src/*.class");
 		this.p2.directory(this.dir);
-		this.p2.redirectOutput(Redirect.DISCARD);
-		this.p2.redirectError(Redirect.DISCARD);
+		this.p2.redirectOutput(Redirect.INHERIT);
+		this.p2.redirectError(Redirect.INHERIT);
 		
 		new File(this.dir, "src/minecraft").mkdirs();
 	}

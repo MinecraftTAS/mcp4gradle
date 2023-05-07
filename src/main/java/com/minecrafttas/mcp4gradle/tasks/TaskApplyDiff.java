@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.DefaultTask;
@@ -26,19 +28,19 @@ public class TaskApplyDiff extends DefaultTask {
 	 */
 	@TaskAction
 	public void applyDiff() throws Exception {
-		var patches = new HashMap<String, Patch<String>>();
+		Map<String, Patch<String>> patches = new HashMap<>();
 		
 		// read patch file
-		var file = new File(this.getProject().getProjectDir(), "change.patch");
+		File file = new File(this.getProject().getProjectDir(), "change.patch");
 		if (!file.exists())
 			file.createNewFile();
-		var lineIterator = Files.readAllLines(file.toPath()).iterator();
+		Iterator<String> lineIterator = Files.readAllLines(file.toPath()).iterator();
 		
 		// parse patch files
-		var currentPatch = new ArrayList<String>();
-		var currentPatchFile = "";
+		List<String> currentPatch = new ArrayList<>();
+		String currentPatchFile = "";
 		while (lineIterator.hasNext()) {
-			var line = lineIterator.next();
+			String line = lineIterator.next();
 			
 			if (line.startsWith("==========>")) {
 				
@@ -55,8 +57,8 @@ public class TaskApplyDiff extends DefaultTask {
 		}
 		
 		// patch files
-		var originalMcSource = new File(this.getProject().getBuildDir(), "src/minecraft/net/minecraft");
-		var modifiedMcSource = new File(this.getProject().getProjectDir(), "src/main/java/net/minecraft");
+		File originalMcSource = new File(this.getProject().getBuildDir(), "src/minecraft/net/minecraft");
+		File modifiedMcSource = new File(this.getProject().getProjectDir(), "src/main/java/net/minecraft");
 		this.patch(originalMcSource, modifiedMcSource, patches);
 
 		System.out.println("Successfully applied diff file");
@@ -91,7 +93,7 @@ public class TaskApplyDiff extends DefaultTask {
 		
 		// apply diff
 		System.out.println("Patching " + original.getName() + "...");
-		var outText = DiffUtils.patch(Files.readAllLines(original.toPath()), patch);
+		List<String> outText = DiffUtils.patch(Files.readAllLines(original.toPath()), patch);
 		
 		// write file
 		Files.write(out.toPath(), outText, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);

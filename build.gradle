@@ -3,6 +3,8 @@ plugins {
 	id 'maven-publish'
 }
 
+sourceCompatibility = targetCompatibility = 1.8
+
 group = 'com.minecrafttas'
 version = '2.0.0'
 archivesBaseName = 'mcp4gradle'
