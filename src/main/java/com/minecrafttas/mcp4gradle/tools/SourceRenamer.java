@@ -6,10 +6,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 
 /**
@@ -1547,16 +1550,16 @@ public class SourceRenamer {
 	 * @throws Exception Filesystem Exception
 	 */
 	public void init(File methods, File fields) throws Exception {
-        var methodParser = CSVFormat.DEFAULT.parse(new FileReader(methods));
-        var fieldParser = CSVFormat.DEFAULT.parse(new FileReader(fields));
+		CSVParser methodParser = CSVFormat.DEFAULT.parse(new FileReader(methods));
+		CSVParser fieldParser = CSVFormat.DEFAULT.parse(new FileReader(fields));
         
         this.methods = new HashMap<>();
-        for (var csvRecord : methodParser)
+        for (CSVRecord csvRecord : methodParser)
         	if (csvRecord.get(8).equals("0")) 
         		this.methods.put(csvRecord.get(0), csvRecord.get(1));
         
         this.fields = new HashMap<>();
-        for (var csvRecord : fieldParser)
+        for (CSVRecord csvRecord : fieldParser)
         	if (csvRecord.get(8).equals("0")) 
         		this.fields.put(csvRecord.get(0), csvRecord.get(1));
         
@@ -1574,8 +1577,7 @@ public class SourceRenamer {
 	}
 	
 	private void apply(File dir) throws Exception {
-		var files = dir.listFiles();
-		for (File f : files) {
+		for (File f : dir.listFiles()) {
 			if (f.isDirectory())
 				this.apply(f);
 			
@@ -1583,14 +1585,14 @@ public class SourceRenamer {
 				continue;
 
 			// read file with line separator '\n'
-			var reader = new FileReader(f);
-			var fileContent = new BufferedReader(reader).lines().collect(Collectors.joining("\n"));
+			FileReader reader = new FileReader(f);
+			String fileContent = new BufferedReader(reader).lines().collect(Collectors.joining("\n"));
 			reader.close();
 			
 			// replace methods
-			var matcher = this.methodPattern.matcher(fileContent);
+			Matcher matcher = this.methodPattern.matcher(fileContent);
 			while (matcher.find()) {
-				var match = matcher.group();
+				String match = matcher.group();
 				if (this.methods.containsKey(match))
 					fileContent = fileContent.replaceAll(match, this.methods.get(match));
 			}
@@ -1598,7 +1600,7 @@ public class SourceRenamer {
 			// replace fields
 			matcher = this.fieldPattern.matcher(fileContent);
 			while (matcher.find()) {
-				var match = matcher.group();
+				String match = matcher.group();
 				if (this.fields.containsKey(match))
 					fileContent = fileContent.replaceAll(match, this.fields.get(match));
 			}
@@ -1607,13 +1609,13 @@ public class SourceRenamer {
 			if (fileContent.contains("import org.lwjgl.opengl.")) {
 				matcher = this.openglPattern.matcher(fileContent);
 				while (matcher.find()) {
-					var match = matcher.group(0);
+					String match = matcher.group(0);
 					if (openlMap.containsKey(Integer.parseInt(match)))
 						fileContent = fileContent.replaceAll(match + "\\)", match + " /*" + openlMap.get(Integer.parseInt(match)) + "*/)").replaceAll(match + ",", match + " /*" + openlMap.get(Integer.parseInt(match)) + "*/,");
 				}
 			}
 			
-			var writer = new FileWriter(f, false);
+			FileWriter writer = new FileWriter(f, false);
 			writer.write(fileContent + "\n");
 			writer.flush();
 			writer.close();

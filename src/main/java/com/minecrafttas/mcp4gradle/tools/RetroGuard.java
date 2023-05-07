@@ -14,21 +14,20 @@ import retrogradle.obf.RetroGuardImpl;
  */
 public class RetroGuard {
 
-	private static final String CONFIG = """
-		deob = %DEOB%
-		startindex = 0
-		input = null
-		output = null
-		log = null
-		script = null
-		protectedpackage = paulscode
-		protectedpackage = com/jcraft
-		protectedpackage = isom
-		protectedpackage = ibxm
-		protectedpackage = de/matthiasmann/twl
-		protectedpackage = org/xmlpull
-		protectedpackage = javax/xml
-		""";
+	private static final String CONFIG = "" +
+		"deob = %DEOB%\n" +
+		"startindex = 0\n" +
+		"input = null\n" +
+		"output = null\n" +
+		"log = null\n" +
+		"script = null\n" +
+		"protectedpackage = paulscode\n" +
+		"protectedpackage = com/jcraft\n" +
+		"protectedpackage = isom\n" +
+		"protectedpackage = ibxm\n" +
+		"protectedpackage = de/matthiasmann/twl\n" +
+		"protectedpackage = org/xmlpull\n" +
+		"protectedpackage = javax/xml\n";
 	
 	private File in, out, cfg;
 
@@ -49,7 +48,7 @@ public class RetroGuard {
 	 * @throws Exception Filesystem Exception
 	 */
 	public void init(File srg) throws Exception {
-		var file = Utils.tempFile();
+		File file = Utils.tempFile();
 		Files.write(file.toPath(), CONFIG.replace("%DEOB%", srg.getAbsolutePath()).getBytes(), StandardOpenOption.CREATE);
 		NameProvider.parseCommandLine(new String[] { "-searge", file.getAbsolutePath() });
 	}

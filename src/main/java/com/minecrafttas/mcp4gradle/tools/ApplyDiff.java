@@ -29,12 +29,12 @@ public class ApplyDiff {
 	 * @throws Exception Filesystem Exception
 	 */
 	public void init(File diff) throws Exception {
-		var applydiff = Utils.tempFile(APPLYDIFF_EXE);
+		File applydiff = Utils.tempFile(APPLYDIFF_EXE);
 		
 		this.p = new ProcessBuilder(applydiff.getAbsolutePath(), "--binary", "-p1", "-u", "-i", diff.getAbsolutePath(), "-d", "src/minecraft");
 		this.p.directory(this.dir);
-		this.p.redirectOutput(Redirect.DISCARD);
-		this.p.redirectError(Redirect.DISCARD);
+		this.p.redirectOutput(Redirect.INHERIT);
+		this.p.redirectError(Redirect.INHERIT);
 	}
 	
 	/**

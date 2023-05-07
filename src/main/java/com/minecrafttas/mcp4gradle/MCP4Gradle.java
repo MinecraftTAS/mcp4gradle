@@ -7,7 +7,9 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ModuleDependency;
+import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.tooling.model.SourceDirectory;
 
 import com.minecrafttas.mcp4gradle.tasks.TaskApplyDiff;
 import com.minecrafttas.mcp4gradle.tasks.TaskCreateDiff;
@@ -29,9 +31,9 @@ public class MCP4Gradle implements Plugin<Project> {
 		project.getExtensions().getByType(JavaPluginExtension.class).setTargetCompatibility(JavaVersion.VERSION_1_8);
 		
 		// add tasks
-		var createDiffTask = project.getTasks().register("createDiff", TaskCreateDiff.class).get();
+		TaskCreateDiff createDiffTask = project.getTasks().register("createDiff", TaskCreateDiff.class).get();
 		createDiffTask.setGroup("mcpgradle");
-		var applyDiffTask = project.getTasks().register("applyDiff", TaskApplyDiff.class).get();
+		TaskApplyDiff applyDiffTask = project.getTasks().register("applyDiff", TaskApplyDiff.class).get();
 		applyDiffTask.setGroup("mcpgradle");
 		
 		// add repositories
@@ -62,7 +64,7 @@ public class MCP4Gradle implements Plugin<Project> {
 		}
 		
 		// create source sets
-		var s = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets().getByName("main").getJava();
+		SourceDirectorySet s = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets().getByName("main").getJava();
 		s.srcDir("src/main/mc");
 	}
 	

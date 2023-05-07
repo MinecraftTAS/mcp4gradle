@@ -38,35 +38,35 @@ public class Utils {
 	 */
 	public static void decompile(File build, File assets) throws Exception {
 		System.out.println("Running RetroGuard...");
-		var rOut = tempFile();
-		var retroguard = new RetroGuard(tempFile(MINECRAFT_URL), rOut, tempFile(RETROGUARD_CFG));
+		File rOut = tempFile();
+		RetroGuard retroguard = new RetroGuard(tempFile(MINECRAFT_URL), rOut, tempFile(RETROGUARD_CFG));
 		retroguard.init(tempFile(RETROGUARD_SRG));
 		retroguard.run();
 		
 		System.out.println("Running MCInjector...");
-		var iOut = tempFile();
-		var mcinjector = new MCInjector(rOut, iOut);
+		File iOut = tempFile();
+		MCInjector mcinjector = new MCInjector(rOut, iOut);
 		mcinjector.init(tempFile(MCINJECTOR_EXC));
 		mcinjector.run();
 		
 		System.out.println("Running JadRetro...");
-		var jOut = new File(build, "bin/minecraft");
-		var jadretro = new JadRetro(iOut, jOut);
+		File jOut = new File(build, "bin/minecraft");
+		JadRetro jadretro = new JadRetro(iOut, jOut);
 		jadretro.init();
 		jadretro.run();
 		
 		System.out.println("Running Jad...");
-		var jad = new Jad(build);
+		Jad jad = new Jad(build);
 		jad.init();
 		jad.run();
 		
 		System.out.println("Running ApplyDiff...");
-		var applydiff = new ApplyDiff(build);
+		ApplyDiff applydiff = new ApplyDiff(build);
 		applydiff.init(tempFile(DIFF));
 		applydiff.run();
 		
 		System.out.println("Running Source Renamer...");
-		var sourcerenamer = new SourceRenamer(new File(build, "src"));
+		SourceRenamer sourcerenamer = new SourceRenamer(new File(build, "src"));
 		sourcerenamer.init(tempFile(METHODS), tempFile(FIELDS));
 		sourcerenamer.run();
 		
@@ -105,7 +105,7 @@ public class Utils {
 	 * @throws Exception Filesystem Exception
 	 */
 	public static File tempFile() throws Exception {
-		var temp = File.createTempFile("mcp4gradle", "");
+		File temp = File.createTempFile("mcp4gradle", "");
 		temp.delete();
 		return temp;
 	}
@@ -117,7 +117,7 @@ public class Utils {
 	 * @throws Exception Filesystem Exception
 	 */
 	public static File tempFile(String url) throws Exception {
-		var temp = File.createTempFile("mcp4gradle", "");
+		File temp = File.createTempFile("mcp4gradle", "");
 		Files.copy(new URL(url).openStream(), temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		return temp;
 	}

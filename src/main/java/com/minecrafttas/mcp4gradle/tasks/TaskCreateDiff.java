@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
+import com.github.difflib.patch.Patch;
 
 /**
  * Gradle Task for creating patch files
@@ -23,12 +25,12 @@ public class TaskCreateDiff extends DefaultTask {
 	 */
 	@TaskAction
 	public void createDiff() throws Exception {
-		var file = new File(this.getProject().getProjectDir(), "change.patch");
+		File file = new File(this.getProject().getProjectDir(), "change.patch");
 		if (!file.exists()) file.createNewFile();
 		FileWriter patch = new FileWriter(file, false);
 		
-		var originalMcSource = new File(this.getProject().getBuildDir(), "src/minecraft/net/minecraft");
-		var modifiedMcSource = new File(this.getProject().getProjectDir(), "src/main/java/net/minecraft");
+		File originalMcSource = new File(this.getProject().getBuildDir(), "src/minecraft/net/minecraft");
+		File modifiedMcSource = new File(this.getProject().getProjectDir(), "src/main/java/net/minecraft");
 		this.diff(originalMcSource, modifiedMcSource, patch);
 
 		patch.close();
@@ -52,13 +54,13 @@ public class TaskCreateDiff extends DefaultTask {
 		}
 		
 		// read files
-		var originalText = original.exists() ? Files.readAllLines(original.toPath()) : new ArrayList<String>();
-		var modifiedText = modified.exists() ? Files.readAllLines(modified.toPath()) : new ArrayList<String>();
+		List<String> originalText = original.exists() ? Files.readAllLines(original.toPath()) : new ArrayList<String>();
+		List<String> modifiedText = modified.exists() ? Files.readAllLines(modified.toPath()) : new ArrayList<String>();
 		
 		// create diff
 		System.out.println("Comparing " + original.getName() + "...");
-		var diff = DiffUtils.diff(originalText, modifiedText);
-		var unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(original.getName(), modified.getName(), originalText, diff, 0);
+		Patch<String> diff = DiffUtils.diff(originalText, modifiedText);
+		List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(original.getName(), modified.getName(), originalText, diff, 0);
 		
 		// write diff
 		if (unifiedDiff.size() != 0) 
