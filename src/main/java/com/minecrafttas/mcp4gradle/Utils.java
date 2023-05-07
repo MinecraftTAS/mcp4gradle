@@ -31,7 +31,7 @@ public class Utils {
 	 * @param build Build/Output directory
 	 * @throws Exception Exception during decompilation process
 	 */
-	public static void decompile(File build, File assets) throws Exception {
+	public static void decompile(File build) throws Exception {
 		System.out.println("Running RetroGuard...");
 		File rOut = tempFile();
 		RetroGuard retroguard = new RetroGuard(tempFile(MINECRAFT_URL), rOut, tempFile(RETROGUARD_CFG));
