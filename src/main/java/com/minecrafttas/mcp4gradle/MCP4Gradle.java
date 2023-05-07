@@ -7,9 +7,7 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ModuleDependency;
-import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.plugins.JavaPluginExtension;
-import org.gradle.tooling.model.SourceDirectory;
 
 import com.minecrafttas.mcp4gradle.tasks.TaskApplyDiff;
 import com.minecrafttas.mcp4gradle.tasks.TaskCreateDiff;
@@ -62,10 +60,6 @@ public class MCP4Gradle implements Plugin<Project> {
 				e.printStackTrace();
 			}
 		}
-		
-		// create source sets
-		SourceDirectorySet s = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets().getByName("main").getJava();
-		s.srcDir("src/main/mc");
 	}
 	
 }
