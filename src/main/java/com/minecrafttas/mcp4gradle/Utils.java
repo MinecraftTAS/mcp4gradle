@@ -1,6 +1,8 @@
 package com.minecrafttas.mcp4gradle;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -92,6 +94,17 @@ public class Utils {
 		File temp = File.createTempFile("mcp4gradle", "");
 		Files.copy(new URL(url).openStream(), temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		return temp;
+	}	
+	/**
+	 * Clears an Input Stream
+	 * @param input Input
+	 * @throws IOException Throws whenever stream was corrupted
+	 */
+	public static void deleteLarge(InputStream input) throws IOException {
+		byte[] buffer = new byte[4096];
+		while(input.read(buffer) != -1) {
+			// hello there...
+		}
 	}
 	
 }

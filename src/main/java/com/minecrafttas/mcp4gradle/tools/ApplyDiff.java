@@ -1,7 +1,6 @@
 package com.minecrafttas.mcp4gradle.tools;
 
 import java.io.File;
-import java.lang.ProcessBuilder.Redirect;
 
 import com.minecrafttas.mcp4gradle.Utils;
 
@@ -33,8 +32,7 @@ public class ApplyDiff {
 		
 		this.p = new ProcessBuilder(applydiff.getAbsolutePath(), "--binary", "-p1", "-u", "-i", diff.getAbsolutePath(), "-d", "src/minecraft");
 		this.p.directory(this.dir);
-		this.p.redirectOutput(Redirect.INHERIT);
-		this.p.redirectError(Redirect.INHERIT);
+		this.p.redirectErrorStream(true);
 	}
 	
 	/**
@@ -42,7 +40,10 @@ public class ApplyDiff {
 	 * @throws Exception
 	 */
 	public void run() throws Exception {
-		this.p.start().waitFor();
+		Process pr = this.p.start(); 
+		pr.getOutputStream().close();
+		Utils.deleteLarge(pr.getInputStream());
+		pr.waitFor();
 	}
 
 }
