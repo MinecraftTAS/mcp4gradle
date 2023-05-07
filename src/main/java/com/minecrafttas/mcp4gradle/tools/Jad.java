@@ -1,7 +1,6 @@
 package com.minecrafttas.mcp4gradle.tools;
 
 import java.io.File;
-import java.lang.ProcessBuilder.Redirect;
 
 import com.minecrafttas.mcp4gradle.Utils;
 
@@ -32,13 +31,11 @@ public class Jad {
 		
 		this.p1 = new ProcessBuilder(jad.getAbsolutePath(), "-b", "-d", "src/minecraft", "-dead", "-o", "-r", "-s", ".java", "-stat", "-v", "-ff", "bin/minecraft/net/minecraft/client/*.class");
 		this.p1.directory(this.dir);
-		this.p1.redirectOutput(Redirect.INHERIT);
-		this.p1.redirectError(Redirect.INHERIT);
-
+		this.p1.redirectErrorStream(true);
+		
 		this.p2 = new ProcessBuilder(jad.getAbsolutePath(), "-b", "-d", "src/minecraft", "-dead", "-o", "-r", "-s", ".java", "-stat", "-v", "-ff", "bin/minecraft/net/minecraft/src/*.class");
 		this.p2.directory(this.dir);
-		this.p2.redirectOutput(Redirect.INHERIT);
-		this.p2.redirectError(Redirect.INHERIT);
+		this.p2.redirectErrorStream(true);
 		
 		new File(this.dir, "src/minecraft").mkdirs();
 	}
@@ -48,8 +45,15 @@ public class Jad {
 	 * @throws Exception
 	 */
 	public void run() throws Exception {
-		this.p1.start().waitFor();
-		this.p2.start().waitFor();
+		Process pr = this.p1.start(); 
+		pr.getOutputStream().close();
+		Utils.deleteLarge(pr.getInputStream());
+		pr.waitFor();
+		
+		pr = this.p2.start(); 
+		pr.getOutputStream().close();
+		Utils.deleteLarge(pr.getInputStream());
+		pr.waitFor();
 	}
 	
 }
