@@ -32,7 +32,8 @@ public class TaskCreateDiff extends DefaultTask {
 		File originalMcSource = new File(this.getProject().getBuildDir(), "src/minecraft/net/minecraft");
 		File modifiedMcSource = new File(this.getProject().getProjectDir(), "src/main/java/net/minecraft");
 		this.diff(originalMcSource, modifiedMcSource, patch);
-
+		patch.write("==========> null");
+		
 		patch.close();
 		System.out.println("Successfully created diff file");
 	}

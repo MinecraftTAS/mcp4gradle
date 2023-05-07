@@ -53,7 +53,7 @@ public class MCP4Gradle implements Plugin<Project> {
 		if (!new File(project.getBuildDir(), "src/minecraft/net/minecraft/client/Minecraft.java").exists()) {
 			// fully decompile the game
 			try {
-				Utils.decompile(project.getBuildDir(), new File(project.getProjectDir(), "src/main/mc"));
+				Utils.decompile(project.getBuildDir());
 				applyDiffTask.applyDiff();
 			} catch (Exception e) {
 				System.err.println("Unable to decompile the game");
